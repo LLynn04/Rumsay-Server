@@ -21,31 +21,25 @@ class DatabaseSeeder extends Seeder
 
 
         // Create admin user (email verified by default)
-        $admins = [
-            [
-                'name' => 'Admin User',
-                'email' => 'admin@service.com',
-                'password' => 'admin123',
-                'phone' => '+1234567890',
-            ],
-            [
-                'name' => 'Second Admin',
-                'email' => 'admin2@service.com',
-                'password' => 'admin234',
-                'phone' => '+1234567891',
-            ]
-        ];
+        User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@service.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+            'phone' => '+1234567890',
+            'email_verified_at' => now(),
+        ]);
 
-        foreach ($admins as $admin) {
-            User::create([
-                'name' => $admin['name'],
-                'email' => $admin['email'],
-                'password' => Hash::make($admin['password']),
-                'role' => 'admin',
-                'phone' => $admin['phone'],
-                'email_verified_at' => now(),
-            ]);
-        }
+        // foreach ($admins as $admin) {
+        //     User::create([
+        //         'name' => $admin['name'],
+        //         'email' => $admin['email'],
+        //         'password' => Hash::make($admin['password']),
+        //         'role' => 'admin',
+        //         'phone' => $admin['phone'],
+        //         'email_verified_at' => now(),
+        //     ]);
+        // }
 
 
         // Create test user (not verified)
