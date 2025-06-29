@@ -11,8 +11,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException as ValidationValidationException;
 
+
+
+
 class AuthController extends Controller
 {
+    public function allUsers()
+    {
+        return response()->json(User::all());
+    }
     /**
      * Register a new user
      */

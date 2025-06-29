@@ -12,12 +12,19 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
 Route::get('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->name('verification.verify');
+Route::middleware(['auth:sanctum', 'admin'])
+    ->get('/users', [AuthController::class, 'allUsers']);
+
+
 
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
     // Auth routes
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+
+
+
 
     // Routes that require email verification (except for admins)
     Route::middleware('verified')->group(function () {
