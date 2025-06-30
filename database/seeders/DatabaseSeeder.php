@@ -57,41 +57,46 @@ class DatabaseSeeder extends Seeder
                 'name' => 'House Cleaning',
                 'description' => 'Professional house cleaning service including all rooms, kitchen, and bathrooms.',
                 'price' => 89.99,
-                'duration' => 120, // 2 hours
+                'duration' => 120,
                 'category' => 'Cleaning',
                 'is_active' => true,
+                'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFBvH16_vro6urmYQZab4yPTOfKYFvbJZ-iQ&s',
             ],
             [
                 'name' => 'Plumbing Repair',
                 'description' => 'Expert plumbing services for leaks, installations, and repairs.',
                 'price' => 125.00,
-                'duration' => 90, // 1.5 hours
+                'duration' => 90,
                 'category' => 'Maintenance',
                 'is_active' => true,
+                'image' => 'https://via.placeholder.com/400x250?text=Plumbing+Repair',
             ],
             [
                 'name' => 'Electrical Installation',
                 'description' => 'Safe and certified electrical installation and repair services.',
                 'price' => 150.00,
-                'duration' => 180, // 3 hours
+                'duration' => 180,
                 'category' => 'Maintenance',
                 'is_active' => true,
+                'image' => 'https://via.placeholder.com/400x250?text=Electrical+Installation',
             ],
             [
                 'name' => 'Garden Landscaping',
                 'description' => 'Complete garden design and landscaping services for your outdoor space.',
                 'price' => 299.99,
-                'duration' => 480, // 8 hours
+                'duration' => 480,
                 'category' => 'Landscaping',
                 'is_active' => true,
+                'image' => 'https://via.placeholder.com/400x250?text=Landscaping',
             ],
             [
                 'name' => 'AC Maintenance',
                 'description' => 'Air conditioning cleaning, maintenance, and repair services.',
                 'price' => 75.00,
-                'duration' => 60, // 1 hour
+                'duration' => 60,
                 'category' => 'Maintenance',
                 'is_active' => true,
+                'image' => 'https://via.placeholder.com/400x250?text=AC+Maintenance',
             ],
         ];
 
