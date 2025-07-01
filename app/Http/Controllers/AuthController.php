@@ -52,37 +52,44 @@ class AuthController extends Controller
     /**
      * Login user (only verified users and admins)
      */
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+  public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        $user = User::where('email', $request->email)->first();
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        // Check if user is admin (admins don't need email verification)
-        if ($user->isUser() && !$user->hasVerifiedEmail()) {
-            return response()->json([
-                'message' => 'Please verify your email before logging in.',
-            ]);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login successful',
-            'user' => $user->only(['id', 'name', 'email', 'role']),
-            'access_token' => $token,
-            'token_type' => 'Bearer',
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        throw ValidationValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
         ]);
     }
+
+    // Check if user is admin (admins don't need email verification)
+    if ($user->isUser() && !$user->hasVerifiedEmail()) {
+        return response()->json([
+            'message' => 'Please verify your email before logging in.',
+        ], 403); // Add status code for unverified users
+    }
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login successful',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'email_verified_at' => $user->email_verified_at, // Add this line
+            'is_verified' => $user->hasVerifiedEmail(), // Add this line for convenience
+        ],
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+    ]);
+}
 
     /**
      * Logout user
