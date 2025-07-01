@@ -134,27 +134,28 @@ class AuthController extends Controller
      * Verify email
      */
     public function verifyEmail(Request $request)
-    {
-        $user = User::find($request->route('id'));
+{
+    $user = User::where('id', $request->route('id'))->first();
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found.'
-            ]);
-        }
-
-        if ($user->hasVerifiedEmail()) {
-            return response()->json([
-                'message' => 'Email already verified.'
-            ]);
-        }
-
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
-
+    if (!$user) {
         return response()->json([
-            'message' => 'Email verified successfully.'
+            'message' => 'User not found.'
         ]);
     }
+
+    if ($user->hasVerifiedEmail()) {
+        return response()->json([
+            'message' => 'Email already verified.'
+        ]);
+    }
+
+    if ($user->markEmailAsVerified()) {
+        event(new Verified($user));
+    }
+
+    return response()->json([
+        'message' => 'Email verified successfully.'
+    ]);
+}
+
 }

@@ -11,6 +11,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
 Route::get('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
 Route::middleware(['auth:sanctum', 'admin'])
     ->get('/users', [AuthController::class, 'allUsers']);
