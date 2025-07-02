@@ -5,7 +5,6 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 
-
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -13,10 +12,13 @@ Route::post('/resend-verification', [AuthController::class, 'resendVerification'
 Route::get('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
+
+// Public services (so users can see available services before booking)
+Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/services/{service}', [ServiceController::class, 'show']);
+
 Route::middleware(['auth:sanctum', 'admin'])
     ->get('/users', [AuthController::class, 'allUsers']);
-
-
 
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
@@ -24,16 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
-
-
-
     // Routes that require email verification (except for admins)
     Route::middleware('verified')->group(function () {
-        // Services (read-only for users)
-        Route::get('/services', [ServiceController::class, 'index']);
-        Route::get('/services/{service}', [ServiceController::class, 'show']);
-
-        // Bookings (Cash payment only)
+        // Bookings (Cash payment only) - require authentication
         Route::get('/bookings', [BookingController::class, 'index']);
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
