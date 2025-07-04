@@ -56,10 +56,13 @@ class ServiceController extends Controller
         if ($request->hasFile('image')) {
             // File upload
             $path = $request->file('image')->store('services', 'public');
+
             $serviceData['image'] = $path;
         } elseif ($request->has('image_url') && $request->image_url) {
             // Image URL
             $serviceData['image'] = $request->image_url;
+            $serviceData['image'] = asset('storage/' . $path);
+3881de1cfcb62ca19108216f362596d2161882c0 
         }
 
         $service = Service::create($serviceData);
