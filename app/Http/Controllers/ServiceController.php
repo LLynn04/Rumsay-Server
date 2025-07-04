@@ -58,11 +58,9 @@ class ServiceController extends Controller
             $path = $request->file('image')->store('services', 'public');
             $serviceData['image'] = $path;
         }
-        // Handle URL import
         elseif ($request->filled('image_url')) {
             $serviceData['image'] = $request->input('image_url');
         }
-
 
         $service = Service::create($serviceData);
 
@@ -123,6 +121,7 @@ class ServiceController extends Controller
             'data' => $service
         ]);
     }
+
 
     /**
      * Remove the specified service (Admin only).
