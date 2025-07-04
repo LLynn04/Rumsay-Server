@@ -14,19 +14,19 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         $query = Service::query();
-
+        
         // Filter by category
         if ($request->has('category')) {
             $query->where('category', $request->category);
         }
-
+        
         // Filter active services for users
         if ($request->user() && $request->user()->isUser()) {
             $query->active();
         }
-
+        
         $services = $query->orderBy('name')->get();
-
+        
         return response()->json([
             'message' => 'Services retrieved successfully',
             'data' => $services
@@ -45,16 +45,21 @@ class ServiceController extends Controller
             'duration' => 'required|integer|min:1', // in minutes
             'category' => 'required|string|max:100',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'sometimes|url|max:500', // Add support for image URLs
             'is_active' => 'sometimes|boolean',
         ]);
 
         $serviceData = $request->only(['name', 'description', 'price', 'duration', 'category']);
         $serviceData['is_active'] = $request->get('is_active', true);
 
-        // Handle image upload
+        // Handle image upload or URL
         if ($request->hasFile('image')) {
+            // File upload
             $path = $request->file('image')->store('services', 'public');
             $serviceData['image'] = $path;
+        } elseif ($request->has('image_url') && $request->image_url) {
+            // Image URL
+            $serviceData['image'] = $request->image_url;
         }
 
         $service = Service::create($serviceData);
@@ -88,20 +93,26 @@ class ServiceController extends Controller
             'duration' => 'sometimes|integer|min:1',
             'category' => 'sometimes|string|max:100',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'sometimes|url|max:500',
             'is_active' => 'sometimes|boolean',
         ]);
 
         $updateData = $request->only(['name', 'description', 'price', 'duration', 'category', 'is_active']);
 
-        // Handle image upload
+        // Handle image upload or URL
         if ($request->hasFile('image')) {
-            // Delete old image
-            if ($service->image) {
+            // Delete old image if it's a file path (not URL)
+            if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
                 Storage::disk('public')->delete($service->image);
             }
-
             $path = $request->file('image')->store('services', 'public');
             $updateData['image'] = $path;
+        } elseif ($request->has('image_url') && $request->image_url) {
+            // Delete old image if it's a file path (not URL)
+            if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($service->image);
+            }
+            $updateData['image'] = $request->image_url;
         }
 
         $service->update($updateData);
@@ -117,8 +128,8 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        // Delete associated image
-        if ($service->image) {
+        // Delete associated image only if it's a file path (not URL)
+        if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
             Storage::disk('public')->delete($service->image);
         }
 
