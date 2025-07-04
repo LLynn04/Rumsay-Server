@@ -45,6 +45,7 @@ class ServiceController extends Controller
             'duration' => 'required|integer|min:1', // in minutes
             'category' => 'required|string|max:100',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'sometimes|string',
             'is_active' => 'sometimes|boolean',
         ]);
 
@@ -56,6 +57,11 @@ class ServiceController extends Controller
             $path = $request->file('image')->store('services', 'public');
             $serviceData['image'] = asset('storage/' . $path);
         }
+        // Handle URL import
+        elseif ($request->filled('image_url')) {
+            $serviceData['image'] = $request->input('image_url');
+        }
+
 
         $service = Service::create($serviceData);
 
