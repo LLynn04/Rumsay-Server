@@ -57,9 +57,6 @@ class ServiceController extends Controller
             // File upload
             $path = $request->file('image')->store('services', 'public');
             $serviceData['image'] = $path;
-        } elseif ($request->has('image_url') && $request->image_url) {
-            // Image URL
-            $serviceData['image'] = $request->image_url;
         }
         // Handle URL import
         elseif ($request->filled('image_url')) {
@@ -98,26 +95,25 @@ class ServiceController extends Controller
             'duration' => 'sometimes|integer|min:1',
             'category' => 'sometimes|string|max:100',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_url' => 'sometimes|url|max:500',
+            'image_url' => 'sometimes|string',
             'is_active' => 'sometimes|boolean',
         ]);
 
         $updateData = $request->only(['name', 'description', 'price', 'duration', 'category', 'is_active']);
 
-        // Handle image upload or URL
+        // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if it's a file path (not URL)
-            if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
+            // Delete old image from storage if it exists
+            if ($service->image && Storage::disk('public')->exists($service->image)) {
                 Storage::disk('public')->delete($service->image);
             }
+
             $path = $request->file('image')->store('services', 'public');
-            $updateData['image'] = $path;
-        } elseif ($request->has('image_url') && $request->image_url) {
-            // Delete old image if it's a file path (not URL)
-            if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete($service->image);
-            }
-            $updateData['image'] = $request->image_url;
+            $updateData['image'] = 'storage/' . $path;
+        }
+        // Handle image URL import if no new file was uploaded
+        elseif ($request->filled('image_url')) {
+            $updateData['image'] = $request->input('image_url');
         }
 
         $service->update($updateData);
