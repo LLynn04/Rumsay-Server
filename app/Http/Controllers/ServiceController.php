@@ -54,7 +54,7 @@ class ServiceController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('services', 'public');
-            $serviceData['image'] = $path;
+            $serviceData['image'] = asset('storage/' . $path);
         }
 
         $service = Service::create($serviceData);
