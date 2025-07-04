@@ -14,19 +14,19 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         $query = Service::query();
-        
+
         // Filter by category
         if ($request->has('category')) {
             $query->where('category', $request->category);
         }
-        
+
         // Filter active services for users
         if ($request->user() && $request->user()->isUser()) {
             $query->active();
         }
-        
+
         $services = $query->orderBy('name')->get();
-        
+
         return response()->json([
             'message' => 'Services retrieved successfully',
             'data' => $services
@@ -56,13 +56,10 @@ class ServiceController extends Controller
         if ($request->hasFile('image')) {
             // File upload
             $path = $request->file('image')->store('services', 'public');
-
             $serviceData['image'] = $path;
         } elseif ($request->has('image_url') && $request->image_url) {
             // Image URL
             $serviceData['image'] = $request->image_url;
-            $serviceData['image'] = asset('storage/' . $path);
-3881de1cfcb62ca19108216f362596d2161882c0 
         }
 
         $service = Service::create($serviceData);
